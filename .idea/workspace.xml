@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d2f8d91-9947-41c3-b7b8-9302dc8a9754" name="Changes" comment="added bones">
+    <list default="true" id="5d2f8d91-9947-41c3-b7b8-9302dc8a9754" name="Changes" comment="starting fresh">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hello.py" beforeDir="false" afterPath="$PROJECT_DIR$/hello.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +78,7 @@
       <workItem from="1742494843894" duration="2269000" />
       <workItem from="1743031260901" duration="198000" />
       <workItem from="1743031527187" duration="3299000" />
-      <workItem from="1743631718021" duration="622000" />
+      <workItem from="1743631718021" duration="1796000" />
     </task>
     <task id="LOCAL-00001" summary="commiting">
       <option name="closed" value="true" />
@@ -111,7 +112,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743632090979</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="starting fresh">
+      <option name="closed" value="true" />
+      <created>1743632552818</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1743632552818</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,9 +146,10 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="commiting" />
     <MESSAGE value="added bones" />
-    <option name="LAST_COMMIT_MESSAGE" value="added bones" />
+    <MESSAGE value="starting fresh" />
+    <option name="LAST_COMMIT_MESSAGE" value="starting fresh" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/lab_lifetime_study$hello.coverage" NAME="hello Coverage Results" MODIFIED="1743033231033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/lab_lifetime_study$hello.coverage" NAME="hello Coverage Results" MODIFIED="1743633455405" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
