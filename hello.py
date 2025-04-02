@@ -1,6 +1,9 @@
 import pandas as pd
 import re
 
+from pandas import concat
+
+
 class data_loader:
     """
     Data Loading and Filtering Module (data_loader.py):
@@ -10,8 +13,9 @@ class data_loader:
     categorizes variables as categorical or quantitative to
     facilitate regression analysis.
     """
-    def __init__(self, file_path):
+    def __init__(self, file_path, file = None):
         self.file_path = file_path
+        self.file = None
 
     def download_csv(self):
         """
@@ -20,16 +24,27 @@ class data_loader:
         :return: the downloaded file
         """
         download = pd.read_csv(self.file_path)
-        return(download)
+        self.file = download
 
     def identify_type(self):
         """
-        Categorizes variables as categorical or quantitative to facilitate regression analysis
-        Updates column names with __C or __Q
+        Categorizes variables as id, categorical, or quantitative to facilitate regression analysis
+        Updates column names with __I, __C or __Q
         :return: None
         """
-        column_names = pd.DataFrame.columns
-        print(column_names)
+        column_names = self.file.columns
+        for i in range(0, len(column_names)):
+            list = column_names[i].split("_")
+            if column_names[i] == "subject_id":
+                id_name = column_names[i] + "__I"
+                self.file = self.file.rename(columns={column_names[i]: id_name})
+            elif "is" == list[0]:
+                categorical_name = column_names[i] + "__C"
+                self.file = self.file.rename(columns = {column_names[i]:categorical_name})
+            elif :
+                pass
+        print(self.file.columns)
+
 
 
     def clean_missing(self):
@@ -56,9 +71,9 @@ class data_loader:
 
 
 x = data_loader(file_path="study_endpoints.csv")
-test = x.download_csv()
+x.download_csv()
 x.identify_type()
 
-print(test)
+print()
 
 

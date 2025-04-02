@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d2f8d91-9947-41c3-b7b8-9302dc8a9754" name="Changes" comment="starting fresh">
+    <list default="true" id="5d2f8d91-9947-41c3-b7b8-9302dc8a9754" name="Changes" comment="added more bones to identify_type">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hello.py" beforeDir="false" afterPath="$PROJECT_DIR$/hello.py" afterDir="false" />
     </list>
@@ -78,7 +78,7 @@
       <workItem from="1742494843894" duration="2269000" />
       <workItem from="1743031260901" duration="198000" />
       <workItem from="1743031527187" duration="3299000" />
-      <workItem from="1743631718021" duration="1796000" />
+      <workItem from="1743631718021" duration="4662000" />
     </task>
     <task id="LOCAL-00001" summary="commiting">
       <option name="closed" value="true" />
@@ -120,7 +120,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743632552818</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="added more bones to identify_type">
+      <option name="closed" value="true" />
+      <created>1743633536554</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743633536554</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -147,9 +155,10 @@
     <MESSAGE value="commiting" />
     <MESSAGE value="added bones" />
     <MESSAGE value="starting fresh" />
-    <option name="LAST_COMMIT_MESSAGE" value="starting fresh" />
+    <MESSAGE value="added more bones to identify_type" />
+    <option name="LAST_COMMIT_MESSAGE" value="added more bones to identify_type" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/lab_lifetime_study$hello.coverage" NAME="hello Coverage Results" MODIFIED="1743633455405" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/lab_lifetime_study$hello.coverage" NAME="hello Coverage Results" MODIFIED="1743636311616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
