@@ -22,6 +22,12 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "IzzyBedic"
+  }
+}]]></component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "git://github.com/IzzyBedic/lab-lifetime-study.git",
@@ -71,7 +77,7 @@
       <workItem from="1742494843894" duration="2269000" />
       <workItem from="1743031260901" duration="198000" />
       <workItem from="1743031527187" duration="3299000" />
-      <workItem from="1743631718021" duration="305000" />
+      <workItem from="1743631718021" duration="622000" />
     </task>
     <task id="LOCAL-00001" summary="commiting">
       <option name="closed" value="true" />
@@ -97,7 +103,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743033412787</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="added bones">
+      <option name="closed" value="true" />
+      <created>1743632090979</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743632090979</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
