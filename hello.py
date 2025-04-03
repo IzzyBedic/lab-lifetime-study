@@ -2,6 +2,7 @@ import pandas as pd
 import re
 
 from pandas import concat
+from pandas.core.dtypes.common import is_int64_dtype
 
 
 class data_loader:
@@ -32,17 +33,28 @@ class data_loader:
         Updates column names with __I, __C or __Q
         :return: None
         """
+        date_keywords = ["year", "month", "day", "hours", "date"]
         column_names = self.file.columns
         for i in range(0, len(column_names)):
             list = column_names[i].split("_")
-            if column_names[i] == "subject_id":
+            if "count" in list:
+                quantitative_name = column_names[i] + "__Q"
+                self.file = self.file.rename(columns={column_names[i]: quantitative_name})
+            elif ("is" == list[0]) or ("any" == list[0]) or ("to_date" == column_names[i]):
+                categorical_name = column_names[i] + "__C"
+                self.file = self.file.rename(columns = {column_names[i]: categorical_name})
+            elif column_names[i] == "subject_id":
                 id_name = column_names[i] + "__I"
                 self.file = self.file.rename(columns={column_names[i]: id_name})
-            elif "is" == list[0]:
+            elif any([x in date_keywords for x in list]):
+                date_name = column_names[i] + "__D"
+                self.file = self.file.rename(columns={column_names[i]: date_name})
+            elif self.file[column_names[i]].dtype == "int64":
+                quantitative_name = column_names[i] + "__Q"
+                self.file = self.file.rename(columns={column_names[i]: quantitative_name})
+            else:
                 categorical_name = column_names[i] + "__C"
-                self.file = self.file.rename(columns = {column_names[i]:categorical_name})
-            elif :
-                pass
+                self.file = self.file.rename(columns={column_names[i]: categorical_name})
         print(self.file.columns)
 
 
@@ -73,7 +85,9 @@ class data_loader:
 x = data_loader(file_path="study_endpoints.csv")
 x.download_csv()
 x.identify_type()
-
+y = data_loader(file_path="conditions_gastrointestinal.csv")
+y.download_csv()
+y.identify_type()
 print()
 
 
