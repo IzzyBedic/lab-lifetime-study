@@ -57,14 +57,13 @@ class data_loader:
                 self.file = self.file.rename(columns={column_names[i]: categorical_name})
         print(self.file.columns)
 
-
-
     def clean_missing(self):
         """
-        handles missing data
-        :return:
+        Handles missing data by marking columns that may not be helpful due to an excess of missing data.
+        :return: None
         """
-        pass
+
+
 
     def clean_junk(self):
         """
