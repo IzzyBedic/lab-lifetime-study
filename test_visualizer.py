@@ -12,7 +12,7 @@ loader.identify_type()
 viz = Graph(loader.file)
 
 # Step 3: Try plotting one of the variables against a quantitative lifespan-like column
-# Since your dataset lacks a true "lifespan", we'll simulate it using year_in_study__Q
+# Since our dataset lacks a true "lifespan", I'll simulate it using year_in_study__Q
 
 viz.which_graph("tier_of_confidence__Q", "year_in_study__Q")  # Example scatter
 viz.which_graph("status__C", "year_in_study__Q")              # Example boxplot
