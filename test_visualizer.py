@@ -1,7 +1,7 @@
 # test_visualizer.py
 
 from data_loader import data_loader
-from visualizer import Graph
+from data_visualizer import Graph
 
 # Step 1: Load and preprocess the data
 loader = data_loader("study_endpoints.csv")
