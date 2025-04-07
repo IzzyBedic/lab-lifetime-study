@@ -13,38 +13,42 @@ class Graph:
     def simple_graph(self, variable, lifespan_column, save=False, filename="simple_plot"):
         """
         Plots any input variable against a dog's lifespan.
-        Automatically selects scatter or boxplot based on variable type.
-        Dynamically adjusts figure size for categorical variables.
+        Dynamically adjusts figure size and axis limits based on data.
         Supports saving as PNG and PDF.
         """
         if variable not in self.df.columns or lifespan_column not in self.df.columns:
             print(f"[Error] Column not found: '{variable}' or '{lifespan_column}'")
             return
 
-        # Categorical: dynamic width based on number of unique categories
+        # Filter out NaNs
+        df_plot = self.df[[variable, lifespan_column]].dropna()
+
+        # Dynamic sizing
+        height = max(6, min(len(df_plot) / 100, 12))  # Adjust height based on data size
+        width = 10  # default width
+
         if variable.endswith("__C"):
-            num_categories = self.df[variable].nunique()
+            num_categories = df_plot[variable].nunique()
             width = max(8, min(num_categories * 0.6, 20))
-            plt.figure(figsize=(width, 6))
-            sns.boxplot(data=self.df, x=variable, y=lifespan_column, palette=self.color_palette)
+            plt.figure(figsize=(width, height))
+            sns.boxplot(data=df_plot, x=variable, y=lifespan_column, palette=self.color_palette)
             plt.xticks(rotation=45, ha='right')
 
-        # Quantitative or date-like: scatterplot with fixed size
         elif variable.endswith("__Q") or variable.endswith("__D"):
-            plt.figure(figsize=(8, 6))
-            sns.scatterplot(data=self.df, x=variable, y=lifespan_column, palette=self.color_palette)
+            width = max(8, min(len(df_plot) / 80, 15))  # wider if more data points
+            plt.figure(figsize=(width, height))
+            sns.scatterplot(data=df_plot, x=variable, y=lifespan_column, palette=self.color_palette)
 
         else:
             print(f"[Warning] Unsupported variable type: {variable}")
             return
 
-        # Titles and labels
+        # Formatting
         plt.title(f"{variable.replace('__', ' ')} vs Lifespan", fontsize=14)
         plt.xlabel(variable.replace('__', ' '), fontsize=12)
         plt.ylabel("Lifespan", fontsize=12)
         plt.tight_layout()
 
-        # Save if requested
         if save:
             plt.savefig(f"{filename}.png")
             plt.savefig(f"{filename}.pdf")
@@ -56,17 +60,21 @@ class Graph:
         """
         Generates a scatterplot of predicted vs actual lifespan
         with a dashed line indicating perfect prediction.
-        Supports saving as PNG and PDF.
+        Adjusts figure size based on dataset.
         """
         if actual not in self.df.columns or predicted not in self.df.columns:
             print(f"[Error] Column not found: '{actual}' or '{predicted}'")
             return
 
-        plt.figure(figsize=(8, 6))
-        sns.scatterplot(data=self.df, x=actual, y=predicted, palette=self.color_palette)
+        df_plot = self.df[[actual, predicted]].dropna()
+        height = max(6, min(len(df_plot) / 100, 12))
+        width = max(8, min(len(df_plot) / 80, 15))
+
+        plt.figure(figsize=(width, height))
+        sns.scatterplot(data=df_plot, x=actual, y=predicted, palette=self.color_palette)
         plt.plot(
-            [self.df[actual].min(), self.df[actual].max()],
-            [self.df[actual].min(), self.df[actual].max()],
+            [df_plot[actual].min(), df_plot[actual].max()],
+            [df_plot[actual].min(), df_plot[actual].max()],
             linestyle='--', color='gray', label='Perfect Prediction'
         )
 
