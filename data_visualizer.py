@@ -25,7 +25,6 @@ class Graph:
 
         # Dynamic sizing
         height = max(6, min(len(df_plot) / 100, 12))  # Adjust height based on data size
-        width = 10  # default width
 
         if variable.endswith("__C"):
             num_categories = df_plot[variable].nunique()
