@@ -1,9 +1,7 @@
+from math import isnan
+
 import pandas as pd
 import re
-
-from pandas import concat
-from pandas.core.dtypes.common import is_int64_dtype
-
 
 class data_loader:
     """
@@ -30,7 +28,7 @@ class data_loader:
     def identify_type(self):
         """
         Categorizes variables as id, categorical, or quantitative to facilitate regression analysis
-        Updates column names with __I, __C or __Q
+        Updates column names with __I, __C, __D, or __Q
         :return: None
         """
         date_keywords = ["year", "month", "day", "hours", "date"]
@@ -55,23 +53,29 @@ class data_loader:
             else:
                 categorical_name = column_names[i] + "__C"
                 self.file = self.file.rename(columns={column_names[i]: categorical_name})
-        print(self.file.columns)
 
     def clean_missing(self):
         """
         Handles missing data by marking columns that may not be helpful due to an excess of missing data.
         :return: None
         """
+        column_names = self.file.columns
+        for i in column_names:
+            na_count = self.file[i].isnull().sum()
+            na_proportion = na_count/self.file[i].size
+            if na_proportion >= .25:
+                marked_name = i + "__cleanme"
+                self.file = self.file.rename(columns={i: marked_name})
 
 
 
-    def clean_junk(self):
+    def clean_junk(self): # uses clean_missing
         """
         will remove columns containing inconsistently formatted
         or low-value data"""
         pass
 
-    def get_info(self):
+    def get_info(self): # hardest!
         """
         retrieves variable descriptions from the
         Betty M. Morris website to enhance interpretability
@@ -87,6 +91,7 @@ x.identify_type()
 y = data_loader(file_path="conditions_gastrointestinal.csv")
 y.download_csv()
 y.identify_type()
+y.clean_missing()
 print()
 
 
