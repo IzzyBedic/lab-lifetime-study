@@ -61,19 +61,20 @@ class data_loader:
         """
         column_names = self.file.columns
         for i in column_names:
-            na_count = self.file[i].isnull().sum()
-            na_proportion = na_count/self.file[i].size
-            if na_proportion >= .25:
+            print(i)
+            is_there_a_non_na_value_per_subject = self.file.groupby("subject_id__I")[i]
+            print(is_there_a_non_na_value_per_subject)
+            na_proportion_per_subject = is_there_a_non_na_value_per_subject/self.file.groupby("subject_id__I")[i].count
+            if na_proportion_per_subject >= .25:
                 marked_name = i + "__cleanme"
                 self.file = self.file.rename(columns={i: marked_name})
-
-
 
     def clean_junk(self): # uses clean_missing
         """
         will remove columns containing inconsistently formatted
-        or low-value data"""
-        pass
+        or low-value data
+        """
+
 
     def get_info(self): # hardest!
         """
@@ -93,5 +94,8 @@ y.download_csv()
 y.identify_type()
 y.clean_missing()
 print()
+
+# filter something or not, set up of threshold for what to do with dogs not present in 7 years
+# consider time more
 
 
