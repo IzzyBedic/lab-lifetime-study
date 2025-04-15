@@ -54,31 +54,52 @@ class data_loader:
                 categorical_name = column_names[i] + "__C"
                 self.file = self.file.rename(columns={column_names[i]: categorical_name})
 
+    def select_year(self, year_num):
+        """
+        Updates the dataset to only include the data within the desired time frame, either one year or all.
+        :param year_num: The year the user wants to select. Options are "all", "year1", "year2", etc.
+        :return: None
+        """
+        integer_search = r"\d+"
+        if "year_in_study" in self.file.columns:
+            print("year in study is not an included variable in this dataset")
+        elif year_num != "all" and len(year_num) != 5:
+            print("year in study must be input in the format 'year#' or if you want an average of all years, 'all'")
+        elif year_num == "all":
+            pass
+        else:
+            sorted_by_year_data = self.file[self.file["year_in_study__D"] == int(year_num[4])]
+            self.file = sorted_by_year_data # "all", "most recent", "year1", get rid of dates besides year in study, collapse all year values into an average across categorical
+
+
     def clean_missing(self):
         """
         Handles missing data by marking columns that may not be helpful due to an excess of missing data.
         :return: None
         """
-        column_names = self.file.columns
+        column_names = self.file.columns[1:]
+        number_dogs = self.file["subject_id__I"].nunique()
+        print(number_dogs)
         for i in column_names:
             print(i)
-            is_there_a_non_na_value_per_subject = self.file.groupby("subject_id__I")[i]
-            print(is_there_a_non_na_value_per_subject)
-            na_proportion_per_subject = is_there_a_non_na_value_per_subject/self.file.groupby("subject_id__I")[i].count
+            non_na_values_per_subject = self.file.groupby("subject_id__I")[i].nunique()
+            print(non_na_values_per_subject) # how many unique values per id not including nas
+            na_proportion_per_subject = non_na_values_per_subject/self.file.groupby("subject_id__I")[i].count()
+            print(na_proportion_per_subject)
             if na_proportion_per_subject >= .25:
                 marked_name = i + "__cleanme"
                 self.file = self.file.rename(columns={i: marked_name})
 
     def clean_junk(self): # uses clean_missing
         """
-        will remove columns containing inconsistently formatted
+        Removes columns containing inconsistently formatted
         or low-value data
         """
-
+        pass
 
     def get_info(self): # hardest!
         """
-        retrieves variable descriptions from the
+        Retrieves variable descriptions from the
         Betty M. Morris website to enhance interpretability
         :return:
         """
@@ -92,8 +113,9 @@ x.identify_type()
 y = data_loader(file_path="conditions_gastrointestinal.csv")
 y.download_csv()
 y.identify_type()
+y.select_year("year5")
 y.clean_missing()
-print()
+print(y)
 
 # filter something or not, set up of threshold for what to do with dogs not present in 7 years
 # consider time more

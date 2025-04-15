@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d2f8d91-9947-41c3-b7b8-9302dc8a9754" name="Changes" comment="clean_missing">
+    <list default="true" id="5d2f8d91-9947-41c3-b7b8-9302dc8a9754" name="Changes" comment="clean_missing notes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_loader.py" afterDir="false" />
     </list>
@@ -22,7 +22,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -84,7 +83,8 @@
       <workItem from="1743639910635" duration="15000" />
       <workItem from="1743695942576" duration="6842000" />
       <workItem from="1744137360963" duration="2581000" />
-      <workItem from="1744220012682" duration="2635000" />
+      <workItem from="1744220012682" duration="7069000" />
+      <workItem from="1744472798987" duration="2882000" />
     </task>
     <task id="LOCAL-00001" summary="commiting">
       <option name="closed" value="true" />
@@ -166,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744138469892</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="clean_missing notes">
+      <option name="closed" value="true" />
+      <created>1744234446291</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1744234446291</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,10 +206,11 @@
     <MESSAGE value="made working prototype of identify_type" />
     <MESSAGE value="renamed file to be more accurate" />
     <MESSAGE value="clean_missing" />
-    <option name="LAST_COMMIT_MESSAGE" value="clean_missing" />
+    <MESSAGE value="clean_missing notes" />
+    <option name="LAST_COMMIT_MESSAGE" value="clean_missing notes" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/lab_lifetime_study$data_loader.coverage" NAME="data_loader Coverage Results" MODIFIED="1744222161081" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/lab_lifetime_study$data_loader.coverage" NAME="data_loader Coverage Results" MODIFIED="1744474296596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/lab_lifetime_study$hello.coverage" NAME="hello Coverage Results" MODIFIED="1743698031074" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
