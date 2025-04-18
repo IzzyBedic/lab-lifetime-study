@@ -91,8 +91,16 @@ class data_loader:
     def clean_junk(self): # uses clean_missing
         """
         Removes columns containing inconsistently formatted
-        or low-value data
+        or low-value data (to regression analysis or visualization)
         """
+        column_names = self.file.columns
+        cleaned_df = pd.DataFrame()
+        for i in column_names:
+            if (i != "subject_id__I" and self.file[i].nunique() >= 1/10*len(self.file[i])) or ("__cleanme" in i):
+                pass
+            else:
+                cleaned_df[i] = self.file[i]
+        self.file = cleaned_df
 
 
 
@@ -106,9 +114,10 @@ y = data_loader(file_path="conditions_gastrointestinal.csv")
 y.download_csv()
 y.identify_type()
 y.select_year("year5")
-print(y)
 y.clean_missing()
-#print(y)
+y.clean_junk()
+print(y.file)
+
 
 # filter something or not, set up of threshold for what to do with dogs not present in 7 years
 # consider time more
