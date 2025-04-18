@@ -2,12 +2,12 @@
 <br>
 Hello! This is the lab lifetime study package. It is designed to facilitate intuitive and easy EDA of data from the Golden Lifetime Retriver Study at the Morris Animal
 Foundation. 
+
 <br>
 Within this repository there are 3 types of files:
 - The __init__ file
 - The class code for data_loader, data_visualizer, and data_analysis
 - For each class document there is a _test file where test cases for that class
-<br>
 
 **Where might this come in handy?**
 <br>
