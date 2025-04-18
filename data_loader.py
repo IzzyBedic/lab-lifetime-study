@@ -79,31 +79,23 @@ class data_loader:
         """
         column_names = self.file.columns[1:]
         number_dogs = self.file["subject_id__I"].nunique()
-        print(number_dogs)
+        print("For context, there are", len(self.file)/number_dogs, "entries in this dataset per unique dog for the timeframe you have selected")
         for i in column_names:
-            print(i)
-            non_na_values_per_subject = self.file.groupby("subject_id__I")[i].nunique()
-            print(non_na_values_per_subject) # how many unique values per id not including nas
-            na_proportion_per_subject = non_na_values_per_subject/self.file.groupby("subject_id__I")[i].count()
-            print(na_proportion_per_subject)
-            if na_proportion_per_subject >= .25:
+            non_na_per_series_item = len(self.file[self.file[i].isna() == True])/len(self.file)
+            if non_na_per_series_item >= .25:
                 marked_name = i + "__cleanme"
                 self.file = self.file.rename(columns={i: marked_name})
+            else:
+                pass
 
     def clean_junk(self): # uses clean_missing
         """
         Removes columns containing inconsistently formatted
         or low-value data
         """
-        pass
 
-    def get_info(self): # hardest!
-        """
-        Retrieves variable descriptions from the
-        Betty M. Morris website to enhance interpretability
-        :return:
-        """
-        pass
+
+
 
 
 
@@ -114,8 +106,9 @@ y = data_loader(file_path="conditions_gastrointestinal.csv")
 y.download_csv()
 y.identify_type()
 y.select_year("year5")
-y.clean_missing()
 print(y)
+y.clean_missing()
+#print(y)
 
 # filter something or not, set up of threshold for what to do with dogs not present in 7 years
 # consider time more
