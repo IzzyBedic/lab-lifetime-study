@@ -103,23 +103,3 @@ class data_loader:
         self.file = cleaned_df
 
 
-
-
-
-
-x = data_loader(file_path="study_endpoints.csv")
-x.download_csv()
-x.identify_type()
-y = data_loader(file_path="conditions_gastrointestinal.csv")
-y.download_csv()
-y.identify_type()
-y.select_year("year5")
-y.clean_missing()
-y.clean_junk()
-print(y.file)
-
-
-# filter something or not, set up of threshold for what to do with dogs not present in 7 years
-# consider time more
-
-
