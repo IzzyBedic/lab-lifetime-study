@@ -4,7 +4,7 @@ Forward feature selection implementation.
 
 import numpy as np
 import matplotlib.pyplot as plt
-from .utils import mse, r_squared, train_val_split, standardize, fit_linear_regression
+from utils import mse, r_squared, train_val_split, standardize, fit_linear_regression
 
 def forward_subset_selection(X, y, val_ratio=0.2, epsilon=1e-4, max_features=None, verbose=True, plot=True, scale=True):
     """
