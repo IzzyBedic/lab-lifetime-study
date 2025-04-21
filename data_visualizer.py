@@ -42,6 +42,13 @@ class Graph:
 
         # Dynamic height based on data size
         height = max(6, min(len(df_plot) / 100, 12))
+        width = max(8, min(len(df_plot) / 80, 15))
+        
+        clean_var = variable.split("__")[0]
+        clean_life = lifespan_column.split("__")[0]
+        
+        plt.figure(figsize=(width, height))
+        sns.set_palette(self.color_palette)
 
         if variable.endswith("__C"):
             num_categories = df_plot[variable].nunique()
@@ -68,20 +75,17 @@ class Graph:
             plt.xticks(rotation=45, ha="right")
 
         elif variable.endswith("__D"):
-            width = max(8, min(len(df_plot) / 80, 15))
-            plt.figure(figsize=(width, height))
             df_plot = df_plot.sort_values(by=variable)
             sns.lineplot(data=df_plot, x=variable, y=lifespan_column, marker="o")
 
         elif variable.endswith("__Q"):
-            width = max(8, min(len(df_plot) / 80, 15))
-            plt.figure(figsize=(width, height))
             sns.scatterplot(
                 data=df_plot,
                 x=variable,
                 y=lifespan_column,
-                palette=self.color_palette
+                color=self.color_palette[0]
             )
+            plt.legend()
 
         else:
             print(f"[Warning] Unsupported variable type: {variable}")
@@ -90,14 +94,14 @@ class Graph:
         if log_y:
             plt.yscale("log")
 
-        plt.title(f"{variable.replace('__', ' ')} vs Lifespan", fontsize=14)
-        plt.xlabel(variable.replace('__', ' '), fontsize=12)
-        plt.ylabel("Lifespan", fontsize=12)
+        plt.title(f"{clean_var} vs {clean_life}", fontsize=14)
+        plt.xlabel(clean_var, fontsize=12)
+        plt.ylabel(clean_life, fontsize=12)
         plt.tight_layout()
 
         if save:
-            plt.savefig(f"{filename}.png")
-            plt.savefig(f"{filename}.pdf")
+            plt.savefig(f"{filename}.png", dpi=300, bbox_inches='tight')
+            plt.savefig(f"{filename}.pdf", bbox_inches='tight')
             print(f"[Saved] {filename}.png and {filename}.pdf")
 
         plt.show()
@@ -115,13 +119,16 @@ class Graph:
         height = max(6, min(len(df_plot) / 100, 12))
         width = max(8, min(len(df_plot) / 80, 15))
 
+        clean_actual = actual.split("__")[0]
+        clean_predicted = predicted.split("__")[0]
+
         plt.figure(figsize=(width, height))
-        sns.scatterplot(data=df_plot, x=actual, y=predicted, palette=self.color_palette)
-        plt.plot(
-            [df_plot[actual].min(), df_plot[actual].max()],
-            [df_plot[actual].min(), df_plot[actual].max()],
-            linestyle="--", color="gray", label="Perfect Prediction"
-        )
+        sns.scatterplot(data=df_plot, x=actual, y=predicted, color=self.color_palette[1])
+
+        # Add perfect prediction line
+        min_val = min(df_plot[actual].min(), df_plot[predicted].min())
+        max_val = max(df_plot[actual].max(), df_plot[predicted].max())
+        plt.plot([min_val, max_val], [min_val, max_val], linestyle="--", color="gray", label="Perfect Prediction")
 
         plt.title("Predicted vs Actual Lifespan", fontsize=14)
         plt.xlabel("Actual Lifespan", fontsize=12)
@@ -130,8 +137,8 @@ class Graph:
         plt.tight_layout()
 
         if save:
-            plt.savefig(f"{filename}.png")
-            plt.savefig(f"{filename}.pdf")
+            plt.savefig(f"{filename}.png", dpi=300, bbox_inches='tight')
+            plt.savefig(f"{filename}.pdf", bbox_inches='tight')
             print(f"[Saved] {filename}.png and {filename}.pdf")
 
         plt.show()
