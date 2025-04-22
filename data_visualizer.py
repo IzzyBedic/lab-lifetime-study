@@ -1,91 +1,59 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from matplotlib.backends.backend_pdf import PdfPages
+import os
 
 class Graph:
-    def __init__(self, dataframe):
-        """
-        Initializes the Graph class with a preprocessed DataFrame.
-        """
+    def __init__(self, dataframe, folder_name="Results"):
         self.df = dataframe
         self.color_palette = sns.color_palette("colorblind")
+        self.pdf_pages = []
+        self.output_dir = folder_name
+        os.makedirs(self.output_dir, exist_ok=True)
 
-    def simple_graph(
-        self,
-        variable,
-        lifespan_column,
-        save=False,
-        filename="simple_plot",
-        bar=False,
-        log_y=False
-    ):
-        """
-        Plots variable vs lifespan with automatic:
-        - Boxplot (categorical)
-        - Bar chart with error bars (bar=True)
-        - Scatterplot (quantitative)
-        - Line plot (date)
-        Optional:
-        - Log scale for y-axis
-        - Saving as PNG/PDF
-        """
+    def save_fig_and_record(self, fig, filename):
+        filepath = os.path.join(self.output_dir, f"{filename}.png")
+        fig.savefig(filepath, dpi=300, bbox_inches='tight')
+        self.pdf_pages.append(fig)
+        print(f"[Saved] {filepath} (added to PDF report)")
+
+    def simple_graph(self, variable, lifespan_column, save=False, filename="simple_plot", bar=False, log_y=False):
         if variable not in self.df.columns or lifespan_column not in self.df.columns:
             print(f"[Error] Column not found: '{variable}' or '{lifespan_column}'")
             return
 
         df_plot = self.df[[variable, lifespan_column]].dropna()
+        if df_plot.empty:
+            print(f"[Warning] No data to plot for '{variable}' vs '{lifespan_column}'")
+            return
 
-        # Convert to datetime if it's a date variable
+        # Handle date variables
         if variable.endswith("__D"):
+            df_plot[variable] = df_plot[variable].astype(str).str.replace(r"-00$", "-01", regex=True)
             df_plot[variable] = pd.to_datetime(df_plot[variable], errors="coerce")
             df_plot = df_plot.dropna()
 
-        # Dynamic height based on data size
-        height = max(6, min(len(df_plot) / 100, 12))
-        width = max(8, min(len(df_plot) / 80, 15))
-        
+        plt.clf()
+        plt.close()
+        fig = plt.figure(figsize=(10, 8))
+
         clean_var = variable.split("__")[0]
         clean_life = lifespan_column.split("__")[0]
-        
-        plt.figure(figsize=(width, height))
-        sns.set_palette(self.color_palette)
 
-        if variable.endswith("__C"):
-            num_categories = df_plot[variable].nunique()
-            width = max(8, min(num_categories * 0.6, 20))
-            plt.figure(figsize=(width, height))
-
+        if variable.endswith("__C") or variable.endswith("__I"):
             if bar:
-                sns.barplot(
-                    data=df_plot,
-                    x=variable,
-                    y=lifespan_column,
-                    estimator="mean",
-                    ci="sd",  # Standard deviation as error bars
-                    palette=self.color_palette
-                )
+                sns.barplot(data=df_plot, x=variable, y=lifespan_column, estimator="mean", errorbar="sd")
             else:
-                sns.boxplot(
-                    data=df_plot,
-                    x=variable,
-                    y=lifespan_column,
-                    palette=self.color_palette
-                )
-
-            plt.xticks(rotation=45, ha="right")
+                sns.boxplot(data=df_plot, x=variable, y=lifespan_column)
+            plt.xticks(rotation=45, ha="right", fontsize=14)
 
         elif variable.endswith("__D"):
             df_plot = df_plot.sort_values(by=variable)
             sns.lineplot(data=df_plot, x=variable, y=lifespan_column, marker="o")
 
         elif variable.endswith("__Q"):
-            sns.scatterplot(
-                data=df_plot,
-                x=variable,
-                y=lifespan_column,
-                color=self.color_palette[0]
-            )
-            plt.legend()
+            sns.scatterplot(data=df_plot, x=variable, y=lifespan_column, color=self.color_palette[0])
 
         else:
             print(f"[Warning] Unsupported variable type: {variable}")
@@ -94,70 +62,49 @@ class Graph:
         if log_y:
             plt.yscale("log")
 
-        plt.title(f"{clean_var} vs {clean_life}", fontsize=14)
-        plt.xlabel(clean_var, fontsize=12)
-        plt.ylabel(clean_life, fontsize=12)
+        plt.title(f"{clean_var} vs {clean_life}", fontsize=20, fontweight='bold')
+        plt.xlabel(clean_var, fontsize=18, fontweight='bold')
+        plt.ylabel(clean_life, fontsize=18, fontweight='bold')
         plt.tight_layout()
 
         if save:
-            plt.savefig(f"{filename}.png", dpi=300, bbox_inches='tight')
-            plt.savefig(f"{filename}.pdf", bbox_inches='tight')
-            print(f"[Saved] {filename}.png and {filename}.pdf")
+            self.save_fig_and_record(fig, filename)
 
         plt.show()
+        plt.close()
 
     def predicted_and_actual(self, actual, predicted, save=False, filename="predicted_vs_actual"):
-        """
-        Scatterplot of predicted vs actual lifespan.
-        Adds a perfect-prediction line. Dynamically sized and savable.
-        """
         if actual not in self.df.columns or predicted not in self.df.columns:
             print(f"[Error] Column not found: '{actual}' or '{predicted}'")
             return
 
         df_plot = self.df[[actual, predicted]].dropna()
-        height = max(6, min(len(df_plot) / 100, 12))
-        width = max(8, min(len(df_plot) / 80, 15))
+        if df_plot.empty:
+            print(f"[Warning] No data to plot for predicted vs actual.")
+            return
 
-        clean_actual = actual.split("__")[0]
-        clean_predicted = predicted.split("__")[0]
+        plt.clf()
+        plt.close()
+        fig = plt.figure(figsize=(10, 8))
 
-        plt.figure(figsize=(width, height))
         sns.scatterplot(data=df_plot, x=actual, y=predicted, color=self.color_palette[1])
-
-        # Add perfect prediction line
         min_val = min(df_plot[actual].min(), df_plot[predicted].min())
         max_val = max(df_plot[actual].max(), df_plot[predicted].max())
         plt.plot([min_val, max_val], [min_val, max_val], linestyle="--", color="gray", label="Perfect Prediction")
 
-        plt.title("Predicted vs Actual Lifespan", fontsize=14)
-        plt.xlabel("Actual Lifespan", fontsize=12)
-        plt.ylabel("Predicted Lifespan", fontsize=12)
+        plt.title("Predicted vs Actual Lifespan", fontsize=20, fontweight='bold')
+        plt.xlabel("Actual Lifespan", fontsize=18, fontweight='bold')
+        plt.ylabel("Predicted Lifespan", fontsize=18, fontweight='bold')
         plt.legend()
         plt.tight_layout()
 
         if save:
-            plt.savefig(f"{filename}.png", dpi=300, bbox_inches='tight')
-            plt.savefig(f"{filename}.pdf", bbox_inches='tight')
-            print(f"[Saved] {filename}.png and {filename}.pdf")
+            self.save_fig_and_record(fig, filename)
 
         plt.show()
+        plt.close()
 
-    def which_graph(
-        self,
-        variable,
-        lifespan_column,
-        save=False,
-        filename=None,
-        bar=False,
-        log_y=False
-    ):
-        """
-        Determines appropriate graph type and calls simple_graph().
-        Use:
-        - bar=True for bar chart (categorical)
-        - log_y=True for log-scale lifespan
-        """
+    def which_graph(self, variable, lifespan_column, save=False, filename=None, bar=False, log_y=False):
         if variable not in self.df.columns:
             print(f"[Error] Variable '{variable}' not found in dataframe.")
             return
@@ -171,3 +118,13 @@ class Graph:
             bar=bar,
             log_y=log_y
         )
+
+    def save_pdf_report(self, path="report.pdf"):
+        if self.pdf_pages:
+            report_path = os.path.join(self.output_dir, path)
+            with PdfPages(report_path) as pdf:
+                for fig in self.pdf_pages:
+                    pdf.savefig(fig)
+            print(f"\n📄 PDF report saved as: {report_path}")
+        else:
+            print("\n⚠️ No plots were added to the PDF report.")
