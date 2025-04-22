@@ -88,7 +88,7 @@ class data_loader:
                 cleaned_df[i] = self.file[i]
         self.file = cleaned_df
 
-    def select_year(self, year_num):
+    def select_year(self, year_num, type_avg_for_categorical = "most_common"):
         """
         !If running into errors with "all", make sure you run "clean_junk" beforehand to get rid of potentially
         empty columns which could mess with the averaging of all columns.
@@ -97,6 +97,7 @@ class data_loader:
         :param year_num: The year the user wants to select. Options are "all", "year1", "year2", etc.
         :return: None
         """
+        self.type_avg_for_categorical = type_avg_for_categorical
         integer_search = r"\d+"
         if "year_in_study__Q" not in self.file.columns:
             print("year in study is not an included variable in this dataset, this dataset is not valid to use for this function")
@@ -108,43 +109,50 @@ class data_loader:
             quantitative_columns = [column for column in self.file.columns if column.endswith("__Q")]
             categorical_columns = [column for column in self.file.columns if column.endswith("__C")]
             categorical_int_columns = [column for column in self.file.columns if (column.endswith("__C") and (self.file[column].dtype == "int64" or self.file[column].dtype == "float64"))]
-            categorical_str_columns = [column for column in self.file.columns if (column.endswith("__C") and (self.file[column].dtype != "int64" and self.file[column].dtype != "float64"))]
             date_columns = [column for column in self.file.columns if column.endswith("__D")]
 
             # quantitative measurements are just averaged
             quantitative_df = self.file.groupby("subject_id__I")[quantitative_columns].mean().reset_index()
 
+            # date measurements are always by most recent
+            date_columns_full = ["subject_id__I"] + date_columns
+            for i in date_columns:
+                sorted_dates = self.file[date_columns_full].sort_values(by=["subject_id__I", i], ascending=[True, False])
+                most_recent_date = sorted_dates_for_recent.drop_duplicates(subset="subject_id__I", keep="first")
+
             ## categorical measurements can be "averaged" by: most recent input, most common input, or if a value of more
             ## than 0 is *ever* input (for numeric categorical variables)
-            # most recent
+
             relevant_columns = ["subject_id__I", "year_in_study__Q"] + categorical_columns
-            sorted_file_categorical_for_recent = self.file[relevant_columns].sort_values(by=["subject_id__I", "year_in_study__Q"],ascending=[True, False])
-            most_recent_categorical = sorted_file_categorical_for_recent.drop_duplicates(subset="subject_id__I", keep="first")
-            # turn into a df with column_name + "most_recent"
 
+            if type_avg_for_categorical == "most_recent":
+                # most recent
+                sorted_file_categorical_for_recent = self.file[relevant_columns].sort_values(by=["subject_id__I", "year_in_study__Q"],ascending=[True, False])
+                most_recent_categorical = sorted_file_categorical_for_recent.drop_duplicates(subset="subject_id__I", keep="first")
+                categorical_df = most_recent_categorical
 
-            # most common
-            most_common_values = {}
-            for index in range(0, len(relevant_columns)):
-                most_common_values[relevant_columns[index]] = self.file.groupby("subject_id__I")[relevant_columns[index]].agg(lambda x: pd.Series.mode(x)[0]) # Gets the most common value
+            elif type_avg_for_categorical == "most_common" or "ever_yes":
+                # I'm putting these together because there's no way to equate a string like "DOG" to a yes or no,
+                # so for string categoricals, I will be defaulting the most common string in a column
 
-            # turn into a df with column_name + "most_common"
+                # most common
+                most_common_values_df = self.file[relevant_columns].copy()
+                for index in range(0, len(relevant_columns)):
+                    most_common_values_df[relevant_columns[index]] = self.file.groupby("subject_id__I")[relevant_columns[index]].agg(lambda x: pd.Series.mode(x)[0]) # Gets the most common value
 
+                # ever yes
+                if type_avg_for_categorical == "ever_yes":
+                    # If ever "yes" (or 1+)
+                    categorical_int_columns = ["subject_id__I"] + categorical_int_columns
+                    categorical_df = self.file[categorical_int_columns].copy()
+                    for i in range(1, len(categorical_int_columns)):
+                        sorted_by_one = self.file[[categorical_int_columns[i], "subject_id__I"]].sort_values(by=["subject_id__I", categorical_int_columns[i]], ascending=[True, False])
+                        ever_yes_categorical = sorted_by_one.drop_duplicates(subset="subject_id__I", keep="first")
+                        ever_yes_name = categorical_int_columns[i] + "__ever_yes"
+                        categorical_df = categorical_df.rename(columns={categorical_int_columns[i]: ever_yes_name})
 
-            # If ever "yes" (or 1+)
-            categorical_int_columns = ["subject_id__I"] + categorical_int_columns
-            categorical_df = self.file[categorical_int_columns].copy()
-            for i in range(1, len(categorical_int_columns)):
-                sorted_by_one = self.file[[categorical_int_columns[i], "subject_id__I"]].sort_values(by=["subject_id__I", categorical_int_columns[i]], ascending=[True, False])
-                ever_yes_categorical = sorted_by_one.drop_duplicates(subset="subject_id__I", keep="first")
-                ever_yes_name = categorical_int_columns[i] + "__ever_yes"
-                categorical_df = categorical_df.rename(columns={categorical_int_columns[i]: ever_yes_name})
-
-
-           # categorical_df["most_common_value"] =
-            #avg_df = self.file.groupby("subject_id__I").agg
-            #print(avg_df) agg depending on categorical or quantitative
-            # join and average all data
+            # joining cat and quant and date by subject_id__I
+            categorical_df = most_common_values_df
 
         else:
             sorted_by_year_data = self.file[self.file["year_in_study__Q"] == int(year_num[4])]
