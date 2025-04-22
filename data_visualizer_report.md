@@ -1,4 +1,5 @@
- Visualization Module Summary
+ Visualization Module Summary:
+
 The Graph class developed for this project successfully delivers a modular, automated, and dataset-agnostic visualization pipeline that fully satisfies the objectives outlined in Part 2 of the proposal.
 
 Key features include:
