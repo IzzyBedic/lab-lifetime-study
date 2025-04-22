@@ -1,5 +1,5 @@
 from math import isnan
-
+from unicodedata import numeric
 import pandas as pd
 import re
 
@@ -35,7 +35,7 @@ class data_loader:
         column_names = self.file.columns
         for i in range(0, len(column_names)):
             list = column_names[i].split("_")
-            if "count" in list:
+            if ("count" in list) or column_names[i] == "year_in_study":
                 quantitative_name = column_names[i] + "__Q"
                 self.file = self.file.rename(columns={column_names[i]: quantitative_name})
             elif ("is" == list[0]) or ("any" == list[0]) or ("to_date" == column_names[i]):
@@ -44,8 +44,10 @@ class data_loader:
             elif column_names[i] == "subject_id":
                 id_name = column_names[i] + "__I"
                 self.file = self.file.rename(columns={column_names[i]: id_name})
-            elif any([x in date_keywords for x in list]):
+            elif any([x in date_keywords for x in list]) and (self.file[column_names[i]].dtype != "object"): # if a date object and also not a list of dates/not in a strict string or int format
+                print(column_names[i])
                 date_name = column_names[i] + "__D"
+                self.file[column_names[i]] = pd.to_datetime(self.file[column_names[i]]) # convert the date to to_datetime
                 self.file = self.file.rename(columns={column_names[i]: date_name})
             elif self.file[column_names[i]].dtype == "int64":
                 quantitative_name = column_names[i] + "__Q"
@@ -53,23 +55,6 @@ class data_loader:
             else:
                 categorical_name = column_names[i] + "__C"
                 self.file = self.file.rename(columns={column_names[i]: categorical_name})
-
-    def select_year(self, year_num):
-        """
-        Updates the dataset to only include the data within the desired time frame, either one year or all.
-        :param year_num: The year the user wants to select. Options are "all", "year1", "year2", etc.
-        :return: None
-        """
-        integer_search = r"\d+"
-        if "year_in_study" in self.file.columns:
-            print("year in study is not an included variable in this dataset")
-        elif year_num != "all" and len(year_num) != 5:
-            print("year in study must be input in the format 'year#' or if you want an average of all years, 'all'")
-        elif year_num == "all":
-            pass
-        else:
-            sorted_by_year_data = self.file[self.file["year_in_study__D"] == int(year_num[4])]
-            self.file = sorted_by_year_data # "all", "most recent", "year1", get rid of dates besides year in study, collapse all year values into an average across categorical
 
 
     def clean_missing(self):
@@ -81,8 +66,8 @@ class data_loader:
         number_dogs = self.file["subject_id__I"].nunique()
         print("For context, there are", len(self.file)/number_dogs, "entries in this dataset per unique dog for the timeframe you have selected")
         for i in column_names:
-            non_na_per_series_item = len(self.file[self.file[i].isna() == True])/len(self.file)
-            if non_na_per_series_item >= .25:
+            na_per_series_item = len(self.file[self.file[i].isna() == True])/len(self.file)
+            if na_per_series_item >= .25:
                 marked_name = i + "__cleanme"
                 self.file = self.file.rename(columns={i: marked_name})
             else:
@@ -93,6 +78,7 @@ class data_loader:
         Removes columns containing inconsistently formatted
         or low-value data (to regression analysis or visualization)
         """
+        self.clean_missing()
         column_names = self.file.columns
         cleaned_df = pd.DataFrame()
         for i in column_names:
@@ -101,5 +87,78 @@ class data_loader:
             else:
                 cleaned_df[i] = self.file[i]
         self.file = cleaned_df
+
+    def select_year(self, year_num):
+        """
+        !If running into errors with "all", make sure you run "clean_junk" beforehand to get rid of potentially
+        empty columns which could mess with the averaging of all columns.
+
+        Updates the dataset to only include the data within the desired time frame, either one year or all.
+        :param year_num: The year the user wants to select. Options are "all", "year1", "year2", etc.
+        :return: None
+        """
+        integer_search = r"\d+"
+        if "year_in_study__Q" not in self.file.columns:
+            print("year in study is not an included variable in this dataset, this dataset is not valid to use for this function")
+        elif year_num != "all" and len(year_num) != 5:
+            print("year in study must be input in the format 'year#' or if you want an average of all years, 'all'")
+        elif year_num == "all":
+            quantitative_columns = [column for column in self.file.columns if column.endswith("__Q")]
+            categorical_columns = [column for column in self.file.columns if column.endswith("__C")]
+            categorical_int_columns = [column for column in self.file.columns if (column.endswith("__C") and (self.file[column].dtype == "int64" or self.file[column].dtype == "float64"))]
+            categorical_str_columns = [column for column in self.file.columns if (column.endswith("__C") and (self.file[column].dtype != "int64" and self.file[column].dtype != "float64"))]
+            date_columns = [column for column in self.file.columns if column.endswith("__D")]
+
+            # quantitative measurements are just averaged
+            quantitative_df = self.file.groupby("subject_id__I")[quantitative_columns].mean().reset_index()
+
+            ## categorical measurements can be "averaged" by: most recent input, most common input, or if a value of more
+            ## than 0 is *ever* input (for numeric categorical variables)
+
+            # most recent
+            relevant_columns = ["subject_id__I", "year_in_study__Q"] + categorical_columns
+            sorted_file_categorical_for_recent = self.file[relevant_columns].sort_values(by=["subject_id__I", "year_in_study__Q"],
+                                                               ascending=[True, False])
+            most_recent_categorical = sorted_file_categorical_for_recent.drop_duplicates(subset="subject_id__I", keep="first")
+            # turn into a df with column_name + "most_recent"
+
+
+            # most common
+            most_common_values = {}
+            for index in range(0, len(relevant_columns)):
+                most_common_values[relevant_columns[index]] = self.file[relevant_columns[index]].mode()[0] # Gets the most common value
+            # turn into a df with column_name + "most_common"
+
+
+            # If ever "yes" (or 1+)
+            categorical_df["ever_more_than_0_or_none"] = self.file[categorical_int_columns]
+            quantitative_name = column_names[i] + "__ever_yes"
+            self.file = self.file.rename(columns={column_names[i]: quantitative_name})
+           # categorical_df["most_common_value"] =
+            #avg_df = self.file.groupby("subject_id__I").agg
+            #print(avg_df) agg depending on categorical or quantitative
+            # join and average all data
+        else:
+            sorted_by_year_data = self.file[self.file["year_in_study__Q"] == int(year_num[4])]
+            self.file = sorted_by_year_data # "all", "most recent", "year1", get rid of dates besides year in study, collapse all year values into an average across categorical
+
+    def age_death_variable(self, required_file = "dog_profile.csv"):
+        """
+        includes the age of death column in whatever dataframe is being used to run the regression
+        on what variables influence age of death
+        :param required_file: the file path for the age of death variable used for the regression analysis
+        updates to: a dataset consisting of a new column `age of death` merged with the current dataset
+        """
+        self.required_file = required_file
+        loaded_data = pd.read_csv(required_file) # loading the data from dog_profile.csv
+        lifespan = pd.DataFrame() # empty dataframe
+        passed = loaded_data[loaded_data["study_status"] == "Enrolled Deceased"].copy() # getting all dogs that have passed away in a copied (to remove error) dataframe
+        passed["death_date_dt"] = pd.to_datetime(passed["death_date"], format = "%Y-%m") # converting death and birth
+        passed["birth_date_dt"] = pd.to_datetime(passed["birth_date"], format = "%Y-%m") # dates to datetime so I can subtract them
+        lifespan["lifespan_days__Q"] = passed["death_date_dt"] - passed["birth_date_dt"] # creating a series that is lifespan in days
+        lifespan["subject_id__I"] = passed["subject_id"]
+        merged_df = self.file.merge(lifespan, how = "left", on = "subject_id__I")
+        self.file = merged_df
+
 
 

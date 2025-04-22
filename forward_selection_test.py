@@ -15,13 +15,15 @@ loader.identify_type()
 
 new_df = y.file
 new_df["outcome"] = loader.file["subject_id__I"] # if the dog died, it's id would be in the subject_id__I column.
-                                                # NaN == dead dog
-new_df["outcome"] = [x is not None for x in new_df["outcome"]]     # then, set "outcome" to a categorical 1 or 0 where 1 is that the dog is alive
+                                                 # NaN == dead dog
+print(new_df["outcome"])
+new_df["outcome"] = [pd.isna(x) is False for x in new_df["outcome"]]  # then, set "outcome" to a categorical True or False where True is that the dog is alive
 new_df["outcome"] = new_df["outcome"].fillna(False)
-print(new_df[new_df["outcome" == False]].tail(100))
+print(new_df["outcome"])
 
-#X = new_df.drop(["outcome"])
-#y = new_df["outcome"].values
+#y = new_df["outcome"]
+#X = new_df[]
+
 
 """forward_subset_selection(X, y,
                          val_ratio=0.2,
