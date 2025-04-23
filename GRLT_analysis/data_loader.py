@@ -174,7 +174,7 @@ class data_loader:
             sorted_by_year_data = self.file[self.file["year_in_study__Q"] == int(year_num[4])]
             self.file = sorted_by_year_data # "all", "most recent", "year1", get rid of dates besides year in study, collapse all year values into an average across categorical
 
-    def age_death_variable(self, required_file = "dog_profile.csv"):
+    def age_death_variable(self, required_file = "data/dog_profile.csv"):
         """
         includes the age of death column in whatever dataframe is being used to run the regression
         on what variables influence age of death

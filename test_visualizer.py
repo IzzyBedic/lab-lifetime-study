@@ -1,15 +1,15 @@
-from data_loader import data_loader
-from data_visualizer import Graph
+from GRLT_analysis.data_loader import data_loader
+from GRLT_analysis.data_visualizer import Graph
 import numpy as np
 
 # Load and process data
-loader = data_loader("study_endpoints.csv")
+loader = data_loader("data/study_endpoints.csv")
 loader.download_csv()
 loader.identify_type()
 loader.select_year("year2")
 print(loader.file.columns)
 
-loader_y_axis = data_loader("conditions_gastrointestinal.csv")
+loader_y_axis = data_loader("data/conditions_gastrointestinal.csv")
 loader_y_axis.download_csv()
 loader_y_axis.identify_type()
 loader_y_axis.select_year("year1")
