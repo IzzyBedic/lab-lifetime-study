@@ -19,14 +19,12 @@ loader.download_csv()
 # ✅ Fix for missing suffix on 'lifespan'
 if "lifespan" in loader.file.columns and TARGET not in loader.file.columns:
     loader.file = loader.file.rename(columns={"lifespan": TARGET})
-    print(f"🔁 Renamed 'lifespan' to '{TARGET}'.")
 
 
 # 🛠 Fix for accidental double renaming like 'lifespan__Q__C'
 for col in loader.file.columns:
     if "lifespan" in col and "__Q" in col and col != TARGET:
         loader.file = loader.file.rename(columns={col: TARGET})
-        print(f"🔁 Renamed misidentified column '{col}' back to '{TARGET}'")
         break
 
 # # Step 2: Simulate lifespan__Q if missing or all values are NaN
