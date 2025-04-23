@@ -21,8 +21,6 @@ if "lifespan" in loader.file.columns and TARGET not in loader.file.columns:
     loader.file = loader.file.rename(columns={"lifespan": TARGET})
     print(f"🔁 Renamed 'lifespan' to '{TARGET}'.")
 
-print("📋 Columns before identify_type():", list(loader.file.columns))
-loader.identify_type()
 
 # 🛠 Fix for accidental double renaming like 'lifespan__Q__C'
 for col in loader.file.columns:
@@ -30,9 +28,6 @@ for col in loader.file.columns:
         loader.file = loader.file.rename(columns={col: TARGET})
         print(f"🔁 Renamed misidentified column '{col}' back to '{TARGET}'")
         break
-
-loader.select_year("year1")
-print("📋 Columns after select_year():", list(loader.file.columns))
 
 # # Step 2: Simulate lifespan__Q if missing or all values are NaN
 # if TARGET not in loader.file.columns or loader.file[TARGET].isnull().all():
