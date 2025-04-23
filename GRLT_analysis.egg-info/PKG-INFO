@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: GRLT_analysis
+Version: 0.1.0
+Summary: Package for loading and manipulating Golden Retriever Lifetime Study data
+Requires-Dist: numpy>=1.19.0
+Requires-Dist: matplotlib>=3.3.0
+Requires-Dist: pandas>=1.0.0
+Requires-Dist: seaborn>=0.11.0
+Dynamic: requires-dist
+Dynamic: summary

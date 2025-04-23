@@ -1,15 +1,14 @@
-from forward_selection import forward_subset_selection
-from data_loader import data_loader
+from GRLT_analysis.data_loader import data_loader
 import pandas as pd
 
 # Load and process data
-y = data_loader(file_path="conditions_gastrointestinal.csv")
+y = data_loader(file_path="data/conditions_gastrointestinal.csv")
 y.download_csv()
 y.identify_type()
 y.select_year("year5")
 y.clean_junk()
 
-loader = data_loader("study_endpoints.csv")
+loader = data_loader("data/study_endpoints.csv")
 loader.download_csv()
 loader.identify_type()
 
