@@ -194,6 +194,6 @@ class Graph:
             with PdfPages(report_path) as pdf:
                 for fig in self.pdf_pages:
                     pdf.savefig(fig)
-            print(f"\n📄 PDF report saved as: {report_path}")
+            print(f"\nPDF report saved as: {report_path}")
         else:
-            print("\n⚠️ No plots were added to the PDF report.")
+            print("\nNo plots were added to the PDF report.")

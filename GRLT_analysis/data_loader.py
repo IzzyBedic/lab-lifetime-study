@@ -127,7 +127,7 @@ class data_loader:
                 date_columns_full = ["subject_id__I"] + date_columns
                 for i in date_columns:
                     sorted_dates = self.file[date_columns_full].sort_values(by=["subject_id__I", i], ascending=[True, False])
-                date_df = sorted_dates_for_recent.drop_duplicates(subset="subject_id__I", keep="first")
+                date_df = sorted_dates.drop_duplicates(subset="subject_id__I", keep="first")
 
             ## categorical measurements can be "averaged" by: most recent input, most common input, or if a value of more
             ## than 0 is *ever* input (for numeric categorical variables)

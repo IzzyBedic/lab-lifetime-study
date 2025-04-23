@@ -4,7 +4,7 @@ Usage example for the featureselection package.
 
 import numpy as np
 import matplotlib.pyplot as plt
-from featureselection import forward_subset_selection, lasso_feature_selection
+from GRLT_analysis.feature_selection import forward_subset_selection, lasso_feature_selection
 
 # Generate sample data
 np.random.seed(42)

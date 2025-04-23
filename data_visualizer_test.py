@@ -4,7 +4,7 @@ from GRLT_analysis.data_loader import data_loader
 from GRLT_analysis.data_visualizer import Graph
 
 # Set the CSV file to load
-csv_path = "conditions_gastrointestinal_with_lifespan.csv"
+csv_path = "data/conditions_gastrointestinal_with_lifespan.csv"
 
 # Extract folder name from CSV filename
 folder_name = os.path.splitext(os.path.basename(csv_path))[0]
@@ -38,9 +38,9 @@ for col in loader.file.columns:
 
 # Step 6: Plot each variable type
 for suffix, columns in columns_by_type.items():
-    print(f"\n🔍 Plotting variables with suffix '{suffix}':")
+    print(f"\nPlotting variables with suffix '{suffix}':")
     for var in columns:
-        # 🚫 Skip unhelpful or redundant plots
+        # Skip unhelpful or redundant plots
         if var == TARGET or var.endswith("__I") or var.startswith("lifespan"):
             continue
 
@@ -51,19 +51,19 @@ for suffix, columns in columns_by_type.items():
             continue
 
         if suffix in ["__C", "__I"] and n_unique > 20:
-            print(f"🚫 Skipping '{var}' — too many unique categories ({n_unique})")
+            print(f"Skipping '{var}' — too many unique categories ({n_unique})")
             continue
 
-        print(f"📊 Plotting '{var}' vs '{TARGET}'...")
+        print(f"Plotting '{var}' vs '{TARGET}'...")
         if suffix in ["__C", "__I"]:
             loader.file[var] = loader.file[var].astype("category")
 
         viz.which_graph(var, TARGET, save=True)
 
 # Step 7: Plot predicted vs actual
-print("\n📈 Plotting predicted vs actual lifespan...")
+print("\nPlotting predicted vs actual lifespan...")
 viz.predicted_and_actual(TARGET, "predicted_lifespan__Q", save=True)
 
 # Step 8: Save all plots to one PDF report
 viz.save_pdf_report("report.pdf")
-print(f"\n✅ All plots saved in '{folder_name}/' and compiled into report.pdf.")
+print(f"\nAll plots saved in '{folder_name}/' and compiled into report.pdf.")

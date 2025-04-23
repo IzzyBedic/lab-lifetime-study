@@ -26,8 +26,6 @@ def standardize(X_train, X_val):
     X_train = X_train.astype(float)
     X_val = X_val.astype(float)
 
-    print("X_train shape:", X_train.shape, "X_val shape:", X_val.shape)
-
     mean = X_train.mean(axis=0)
     std = X_train.std(axis=0)
     std[std == 0] = 1.0  # Avoid divide-by-zero
@@ -36,37 +34,6 @@ def standardize(X_train, X_val):
     X_val_std = (X_val - mean) / std
 
     return X_train_std, X_val_std, mean, std
-
-def standardize_old(X_train, X_val):
-    """Standardize based on training set stats."""
-    print("X_train shape:", X_train.shape)
-    print("Any NaNs?", np.isnan(X_train).any())
-    print("Any Infs?", np.isinf(X_train).any())
-    mean = X_train.mean(axis=0)
-    std = X_train.std(axis=0)
-    std[std == 0] = 1.0  # Avoid divide-by-zero
-    return (X_train - mean) / std, (X_val - mean) / std, mean, std
-
-def standardize_new(X_train, X_val):
-    """Standardize based on training set stats."""
-    # Filter out constant columns (columns with zero variance)
-    print(X_train.shape, X_val.shape)
-    non_constant_columns = X_train.std(axis=0) != 0  # Columns where std != 0
-    X_train_filtered = X_train[:, non_constant_columns]
-    X_val_filtered = X_val[:, non_constant_columns]
-
-    print(X_train_filtered.shape, X_val_filtered.shape)  # Check filtered shapes
-
-    # Compute the mean and std of the filtered columns
-    mean = X_train_filtered.mean(axis=0)
-    std = X_train_filtered.std(axis=0)
-
-    # Handle any remaining columns with zero variance
-    std[std == 0] = 1.0  # Avoid divide-by-zero
-
-    # Return standardized data
-    return (X_train_filtered - mean) / std, (X_val_filtered - mean) / std, mean, std
-
 
 def one_hot_encode_np(X, categorical_columns, original_column_names):
     """
