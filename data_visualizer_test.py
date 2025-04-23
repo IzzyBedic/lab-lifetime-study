@@ -21,7 +21,6 @@ loader.select_year("year1")
 # Step 2: Simulate lifespan__Q if missing
 if TARGET not in loader.file.columns:
     loader.file[TARGET] = np.random.normal(10, 2, size=len(loader.file))
-    print(f"[✓] Simulated '{TARGET}'.")
 
 # Step 3: Simulate predicted lifespan for regression plot
 loader.file["predicted_lifespan__Q"] = loader.file[TARGET] + np.random.normal(0, 1, size=len(loader.file))
