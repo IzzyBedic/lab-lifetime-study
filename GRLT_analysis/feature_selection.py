@@ -50,8 +50,14 @@ def forward_subset_selection(X, y, val_ratio=0.2, epsilon=1e-4, max_features=Non
 
         for feature in remaining_features:
             trial_features = selected_features + [feature]
-            theta, train_preds, train_mse = fit_linear_regression(X_train[:, trial_features], y_train)
-            _, val_preds, val_mse = fit_linear_regression(X_val[:, trial_features], y_val)
+
+            # Create feature matrices with selected features
+            X_train_features = X_train[:, trial_features]
+            X_val_features = X_val[:, trial_features]
+
+            # Fit linear regression
+            theta, train_preds, train_mse = fit_linear_regression(X_train_features, y_train)
+            _, val_preds, val_mse = fit_linear_regression(X_val_features, y_val)
 
             if val_mse < best_candidate_mse:
                 best_candidate_mse = val_mse
@@ -275,22 +281,96 @@ def lasso_feature_selection(X, y, val_ratio=0.2, alpha_min=1e-4, alpha_max=1e2, 
     val_mse_history = []
     r_sq_history = []
 
+    coef_paths = np.zeros((n_alphas, X.shape[1]))
     # Loop through the alphas to find the best one
-    for alpha in alphas:
+    for i, alpha in enumerate(alphas):
         coefs, intercept, train_mse, val_mse, train_preds, val_preds = lasso_regression(
             X_train, y_train, X_val, y_val, alpha
         )
+        coef_paths[i] = coefs
 
         # Calculate R-squared
         ss_res = np.sum((y_val - val_preds)**2)
         ss_tot = np.sum((y_val - np.mean(y_val))**2)
         r_sq = 1 - ss_res / ss_tot
 
+        train_mse_history.append(train_mse)
+        val_mse_history.append(val_mse)
+        r_sq_history.append(r_sq)
+
+        if verbose:
+            print(f"Alpha: {alpha:.6f}, Train MSE: {train_mse:.4f}, Val MSE: {val_mse:.4f}, R²: {r_sq:.4f}, Active features: {np.sum(coefs != 0)}")
+
         if val_mse < best_val_mse:
             best_val_mse = val_mse
             best_r_sq = r_sq
             best_alpha = alpha
+            best_coefs = coefs.copy()
+            best_intercept = intercept
+            best_train_preds = train_preds.copy()
+            best_val_preds = val_preds.copy()
 
     if best_alpha is None:
-        print("Lasso failed: Never found suitable features")
-        return None
+        if verbose:
+            print("Lasso failed: Never found suitable features")
+        return None, None, None, None, None, None, None
+
+    selected_features = np.where(best_coefs != 0)[0].tolist()
+
+    if verbose:
+        print(f"\nBest alpha: {best_alpha:.6f}")
+        print(f"Selected {len(selected_features)} features: {selected_features}")
+        print(f"Coefficients: {best_coefs[best_coefs != 0]}")
+        print(f"Intercept: {best_intercept}")
+        print(f"Best validation MSE: {best_val_mse:.4f}")
+        print(f"Best R-squared: {best_r_sq:.4f}")
+
+    if plot and len(alphas) > 1:
+        # Plot MSE vs alpha
+        plt.figure(figsize=(10, 6))
+        plt.semilogx(alphas, train_mse_history, label='Train MSE')
+        plt.semilogx(alphas, val_mse_history, label='Validation MSE')
+        plt.axvline(best_alpha, color='r', linestyle='--', label='Best alpha')
+        plt.xlabel('Alpha')
+        plt.ylabel('Mean Squared Error')
+        plt.title('Lasso Regularization Path')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+        # Plot R² vs alpha
+        plt.figure(figsize=(10, 6))
+        plt.semilogx(alphas, r_sq_history, label='R²')
+        plt.axvline(best_alpha, color='r', linestyle='--', label='Best alpha')
+        plt.xlabel('Alpha')
+        plt.ylabel('R-squared')
+        plt.title('Lasso R² Performance')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+        # Plot coefficient paths
+        plt.figure(figsize=(12, 8))
+        for j in range(X.shape[1]):
+            plt.semilogx(alphas, coef_paths[:, j], label=f'Feature {j}')
+        plt.axvline(best_alpha, color='r', linestyle='--', label='Best alpha')
+        plt.xlabel('Alpha')
+        plt.ylabel('Coefficient Value')
+        plt.title('Lasso Coefficient Paths')
+        if X.shape[1] <= 20:  # Only show legend if there aren't too many features
+            plt.legend(loc='upper right')
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+        # For the full dataset predictions
+    if scale:
+        X_full_scaled = (X - train_mean) / train_std
+    else:
+        X_full_scaled = X
+
+    best_preds = np.dot(X_full_scaled, best_coefs) + best_intercept
+
+    return selected_features, best_coefs, best_intercept, best_preds, best_alpha, best_val_mse, best_r_sq
