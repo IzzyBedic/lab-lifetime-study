@@ -20,12 +20,15 @@ loader.download_csv()
 if "lifespan" in loader.file.columns and TARGET not in loader.file.columns:
     loader.file = loader.file.rename(columns={"lifespan": TARGET})
 
+loader.identify_type()
 
 # 🛠 Fix for accidental double renaming like 'lifespan__Q__C'
 for col in loader.file.columns:
     if "lifespan" in col and "__Q" in col and col != TARGET:
         loader.file = loader.file.rename(columns={col: TARGET})
         break
+
+loader.select_year("year1")
 
 # # Step 2: Simulate lifespan__Q if missing or all values are NaN
 # if TARGET not in loader.file.columns or loader.file[TARGET].isnull().all():
