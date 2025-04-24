@@ -1,7 +1,7 @@
 import numpy as np
 import os
-from data_loader import data_loader
-from data_visualizer import Graph
+from GRLT_analysis.data_loader import data_loader
+from GRLT_analysis.data_visualizer import Graph
 
 # Set the CSV file to load
 csv_path = "study_endpoints_with_lifespan.csv"
